@@ -24,18 +24,17 @@ def main(event, context):
 
                 table_data.append(
                     [
-                        instance_name,
+                        f"{instance_name}@{customer_tag}".strip("@"),
+                        instance_state,
                         region["RegionName"],
                         instance_type,
-                        instance_state,
-                        customer_tag,
                     ]
                 )
 
     # Convert data into tabular format and send as a slack message
     table_string = tabulate(
-        table_data,
-        headers=["Name", "Region", "Size", "State", "Customer Tag"],
+        sorted(table_data, key=lambda r: ("0" if r[1] == "running" else "1") + r[3]),
+        headers=["Name", "State", "Region", "Size"],
         tablefmt="pipe",
     )
     send_slack_message(table_string)
